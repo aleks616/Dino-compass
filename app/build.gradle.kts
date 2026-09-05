@@ -14,7 +14,8 @@ android {
     defaultConfig {
         applicationId="com.example.compass"
         minSdk=35
-        targetSdk=36
+        //noinspection EditedTargetSdkVersion
+        targetSdk=37
         versionCode=1
         versionName="1.0"
 
@@ -48,7 +49,6 @@ dependencies {
     implementation(libs.wear.tooling.preview)
     implementation(libs.activity.compose)
     implementation(libs.core.splashscreen)
-    androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)

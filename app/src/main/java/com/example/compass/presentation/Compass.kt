@@ -5,9 +5,12 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 
-class Compass(context:Context):SensorEventListener {
+class Compass(context:Context,latitude:Double,longitude:Double):SensorEventListener {
     interface CompassListener {
         fun onNewAzimuth(azimuth:Float)
     }
@@ -26,6 +29,11 @@ class Compass(context:Context):SensorEventListener {
 
     private var azimuth=0f
     private var azimuthFix=0f
+    private var targetDirection=0f
+
+    init {
+        setLocation(latitude,longitude)
+    }
 
     fun start() {
         sensorManager.registerListener(
@@ -40,6 +48,26 @@ class Compass(context:Context):SensorEventListener {
 
     fun stop() {
         sensorManager.unregisterListener(this)
+    }
+
+    fun setLocation(latitude:Double,longitude:Double) {
+        val userLocation=Location(latitude,longitude)
+        val nearestStore=dinoList.minByOrNull {
+            it.getDistance(userLocation)
+        }
+
+        if(nearestStore!=null) {
+            val storeLocation=nearestStore.location!!
+
+            val userLatitude=Math.toRadians(latitude)
+            val storeLatitude=Math.toRadians(storeLocation.latitude)
+            val deltaLongitude=Math.toRadians(storeLocation.longitude-longitude)
+
+            val y=sin(deltaLongitude)*cos(storeLatitude)
+            val x=cos(userLatitude)*sin(storeLatitude)-sin(userLatitude)*cos(storeLatitude)*cos(deltaLongitude)
+
+            targetDirection=((Math.toDegrees(atan2(y,x))+360)%360).toFloat()
+        }
     }
 
     fun setAzimuthFix(fix:Float) {
@@ -93,6 +121,7 @@ class Compass(context:Context):SensorEventListener {
                 // Log.d(TAG, "azimuth (rad): " + azimuth);
                 azimuth=Math.toDegrees(orientation!![0].toDouble()).toFloat() // orientation
                 azimuth=(azimuth+azimuthFix+360)%360
+                azimuth=(targetDirection-azimuth+360)%360
                 // Log.d(TAG, "azimuth (deg): " + azimuth);
                 if(listener!=null) {
                     listener!!.onNewAzimuth(azimuth)

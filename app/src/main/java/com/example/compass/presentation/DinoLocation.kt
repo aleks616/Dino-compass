@@ -7,8 +7,8 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 data class Location(val latitude:Double,val longitude:Double)
 
-class DinoLocation(id:Int,address:String,street:String,city:String,location:Location,zipCode:String) {
-    var location:Location?=null
+class DinoLocation(id:Int,address:String,street:String,city:String,locationP:Location,zipCode:String) {
+    var location:Location?=locationP
 
     fun getDistance(userLocation:Location):Double {
         val earthRadius=6371
