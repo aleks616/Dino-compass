@@ -74,9 +74,9 @@ class Compass(context:Context,latitude:Double,longitude:Double):SensorEventListe
         azimuthFix=fix
     }
 
-    fun resetAzimuthFix() {
+    /*fun resetAzimuthFix() {
         setAzimuthFix(0f)
-    }
+    }*/
 
     fun setListener(l:CompassListener?) {
         listener=l
@@ -133,7 +133,7 @@ class Compass(context:Context,latitude:Double,longitude:Double):SensorEventListe
     override fun onAccuracyChanged(sensor:Sensor?,accuracy:Int) {
     }
 
-    companion object {
+    /*companion object {
         private const val TAG="Compass"
-    }
+    }*/
 }
