@@ -24,8 +24,8 @@ class Compass(context:Context,latitude:Double,longitude:Double):SensorEventListe
 
     private val mGravity=FloatArray(3)
     private val mGeomagnetic=FloatArray(3)
-    private val R=FloatArray(9)
-    private val I=FloatArray(9)
+    private val r=FloatArray(9)
+    private val i=FloatArray(9)
 
     private var azimuth=0f
     private var azimuthFix=0f
@@ -70,9 +70,9 @@ class Compass(context:Context,latitude:Double,longitude:Double):SensorEventListe
         }
     }
 
-    fun setAzimuthFix(fix:Float) {
+    /*fun setAzimuthFix(fix:Float) {
         azimuthFix=fix
-    }
+    }*/
 
     /*fun resetAzimuthFix() {
         setAzimuthFix(0f)
@@ -86,43 +86,24 @@ class Compass(context:Context,latitude:Double,longitude:Double):SensorEventListe
         val alpha=0.97f
 
         synchronized(this) {
-            if(event.sensor.getType()==Sensor.TYPE_ACCELEROMETER) {
-                mGravity[0]=(alpha*mGravity[0]+(1-alpha)
-                             *event.values[0])
-                mGravity[1]=(alpha*mGravity[1]+(1-alpha)
-                             *event.values[1])
-                mGravity[2]=(alpha*mGravity[2]+(1-alpha)
-                             *event.values[2])
-
-                // mGravity = event.values;
-
-                // Log.e(TAG, Float.toString(mGravity[0]));
+            if(event.sensor.type==Sensor.TYPE_ACCELEROMETER) {
+                mGravity[0]=(alpha*mGravity[0]+(1-alpha)*event.values[0])
+                mGravity[1]=(alpha*mGravity[1]+(1-alpha)*event.values[1])
+                mGravity[2]=(alpha*mGravity[2]+(1-alpha)*event.values[2])
             }
-            if(event.sensor.getType()==Sensor.TYPE_MAGNETIC_FIELD) {
-                // mGeomagnetic = event.values;
-
-                mGeomagnetic[0]=(alpha*mGeomagnetic[0]+(1-alpha)
-                                 *event.values[0])
-                mGeomagnetic[1]=(alpha*mGeomagnetic[1]+(1-alpha)
-                                 *event.values[1])
-                mGeomagnetic[2]=(alpha*mGeomagnetic[2]+(1-alpha)
-                                 *event.values[2])
-
-                // Log.e(TAG, Float.toString(event.values[0]));
+            if(event.sensor.type==Sensor.TYPE_MAGNETIC_FIELD) {
+                mGeomagnetic[0]=(alpha*mGeomagnetic[0]+(1-alpha)*event.values[0])
+                mGeomagnetic[1]=(alpha*mGeomagnetic[1]+(1-alpha)*event.values[1])
+                mGeomagnetic[2]=(alpha*mGeomagnetic[2]+(1-alpha)*event.values[2])
             }
 
-            val success=SensorManager.getRotationMatrix(
-                R,I,mGravity,
-                mGeomagnetic
-            )
+            val success=SensorManager.getRotationMatrix(r,i,mGravity,mGeomagnetic)
             if(success) {
-                val orientation:FloatArray?=FloatArray(3)
-                SensorManager.getOrientation(R,orientation)
-                // Log.d(TAG, "azimuth (rad): " + azimuth);
-                azimuth=Math.toDegrees(orientation!![0].toDouble()).toFloat() // orientation
+                val orientation=FloatArray(3)
+                SensorManager.getOrientation(r,orientation)
+                azimuth=Math.toDegrees(orientation[0].toDouble()).toFloat()
                 azimuth=(azimuth+azimuthFix+360)%360
                 azimuth=(targetDirection-azimuth+360)%360
-                // Log.d(TAG, "azimuth (deg): " + azimuth);
                 if(listener!=null) {
                     listener!!.onNewAzimuth(azimuth)
                 }
